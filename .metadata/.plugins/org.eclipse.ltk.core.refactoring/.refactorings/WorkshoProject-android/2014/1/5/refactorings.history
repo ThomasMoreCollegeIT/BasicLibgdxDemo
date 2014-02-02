@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring accessors="true" comment="Delete 10 elements from project &apos;WorkshoProject-android&apos;&#x0D;&#x0A;- Original project: &apos;WorkshoProject-android&apos;&#x0D;&#x0A;- Original elements:&#x0D;&#x0A;     background.png&#x0D;&#x0A;     default.fnt&#x0D;&#x0A;     default.png&#x0D;&#x0A;     gold_pile.png&#x0D;&#x0A;     paladin.png&#x0D;&#x0A;     password.fnt&#x0D;&#x0A;     password.png&#x0D;&#x0A;     uiskin.atlas&#x0D;&#x0A;     uiskin.json&#x0D;&#x0A;     uiskin.png" description="Delete elements" element1="uiskin.atlas" element10="gold_pile.png" element2="password.png" element3="default.fnt" element4="uiskin.png" element5="uiskin.json" element6="password.fnt" element7="default.png" element8="paladin.png" element9="background.png" elements="0" flags="589830" id="org.eclipse.jdt.ui.delete" resources="10" stamp="1391068000206" subPackages="false" version="1.0"/>
+</session>

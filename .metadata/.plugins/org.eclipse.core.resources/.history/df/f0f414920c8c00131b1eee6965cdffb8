@@ -1,0 +1,48 @@
+package com.reid.workshop;
+
+import com.badlogic.gdx.math.Rectangle;
+
+public class Player
+{
+	int x, y;
+	Rectangle rect;
+	
+	public Player(int xcoord, int ycoord)
+	{
+		x = xcoord;
+		y = ycoord;
+		rect = new Rectangle(x, y, 64, 64);
+	}
+
+	public int getX()
+	{
+		return x;
+	}
+
+	public int getY()
+	{
+		return y;
+	}
+
+	public Rectangle getRect()
+	{
+		return rect;
+	}
+	
+	public void changePosition(int xChange, int yChange)
+	{
+		x = x + xChange;
+		y = y + yChange;
+		rect.setX(x);
+		rect.setY(y);
+		
+	}
+	
+	public void setPosition(int xpos, int ypos)
+	{
+		x = xpos;
+		y = ypos;
+	}
+
+
+}

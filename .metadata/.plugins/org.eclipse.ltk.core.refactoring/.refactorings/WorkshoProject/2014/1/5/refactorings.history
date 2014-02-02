@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename field &apos;player&apos; in &apos;com.reid.workshop.GameScreen&apos; to &apos;playerImage&apos;&#x0D;&#x0A;- Original project: &apos;WorkshoProject&apos;&#x0D;&#x0A;- Original element: &apos;com.reid.workshop.GameScreen.player&apos;&#x0D;&#x0A;- Renamed element: &apos;com.reid.workshop.GameScreen.playerImage&apos;&#x0D;&#x0A;- Update references to refactored element&#x0D;&#x0A;- Update textual occurrences in comments and strings" delegate="false" deprecate="false" description="Rename field &apos;player&apos;" flags="589826" getter="false" id="org.eclipse.jdt.ui.rename.field" input="/src&lt;com.reid.workshop{GameScreen.java[GameScreen^player" name="playerImage" references="true" setter="false" stamp="1391080666151" textual="false" version="1.0"/>
+</session>

@@ -1,0 +1,236 @@
+package com.reid.workshop;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.GL10;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.input.GestureDetector;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.TimeUtils;
+
+public class GameScreen implements Screen
+{
+
+    private static final int VIRTUAL_WIDTH = 800;
+    private static final int VIRTUAL_HEIGHT = 480;
+    private static final float ASPECT_RATIO = (float)VIRTUAL_WIDTH/(float)VIRTUAL_HEIGHT;
+	
+	private OrthographicCamera camera;
+	private Rectangle viewport;
+	private SpriteBatch batch;
+	
+	private Stage stage;
+	
+	private Image playerImage;
+	
+	public Player player;
+	
+	private Array<Coin> coins;
+	private Image coinImage;
+	private Texture coinTex;
+	private long coinTimer = 0;
+	
+	private int score = 0;
+	private BitmapFont font;
+	
+	public GameScreen()
+	{
+		camera = new OrthographicCamera(VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
+		camera.position.set(0f, 0f, 0f);
+		camera.setToOrtho(true);
+		
+		//Gdx.graphics.setDisplayMode(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, false);
+		//camera.setToOrtho(false, 800, 480);
+		Gdx.input.setInputProcessor(new GestureDetector(new GameGestureListener(this)));
+		
+		batch = new SpriteBatch();
+		
+		Texture playTex = new Texture(Gdx.files.internal("paladin.png")); //create a pixel map in memory of what this image looks like
+		playerImage = new Image(playTex);
+		playerImage.setSize(128, 128);
+		
+		
+		player = new Player(400, 240);
+		
+		coinTex = new Texture(Gdx.files.internal("gold_pile.png")); //keep this in contructor so that we only fetch it once and put it into memory
+		coinImage = new Image(coinTex);
+		coins = new Array<Coin>();
+		
+		font = new BitmapFont();
+		
+		coinTimer = TimeUtils.millis();
+		
+		resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		
+		
+	}
+	
+	
+	public void createCoin()
+	{
+		
+		//coinImage.setPosition(MathUtils.random(32,768), MathUtils.random(32,568));
+		//coins.add(coinImage);
+		coins.add(new Coin(MathUtils.random(32,768), MathUtils.random(32,568)));
+	}
+	
+	@Override
+	public void render(float delta)
+	{
+		
+        // update camera
+        camera.update();
+        camera.apply(Gdx.gl10);
+
+        // set viewport
+        Gdx.gl.glViewport((int) viewport.x, (int) viewport.y,
+                          (int) viewport.width, (int) viewport.height);
+		
+		Gdx.gl.glClearColor(0, 0, 0, 0);
+		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+		
+		camera.update();
+		
+		//going to create sprites the easy way, not necissarily correct way
+		//any image files read in must have dimensions which are a power of two, probably square only
+		
+		batch.begin(); //so we can cluster our calls together
+		for(Coin coin : coins) //iterate through all coins
+		{
+			//coin.draw(batch, 1);
+			coinImage.setPosition(coin.getX(), coin.getY());
+			coinImage.draw(batch, 1);
+		}
+		playerImage.setPosition(player.getX(), player.getY());
+		playerImage.draw(batch, 1);
+		handleMovement(delta);
+		handleTimedEvents();
+		font.draw(batch, "Score " + score, 50, 300);
+		batch.end();
+		
+		
+	}
+
+	private void handleTimedEvents()
+	{
+		if(TimeUtils.millis() - coinTimer > 3000) //TimeUtils.millis() is milliseconds since start of program, every 3 seconds
+		{
+			coinTimer = TimeUtils.millis();
+			createCoin();
+		}
+	}
+	
+	//should probably do this with events not polling keyboard
+	private void handleMovement(float delta)
+	{
+		
+	
+		
+		if(Gdx.input.isKeyPressed(Input.Keys.LEFT))
+		{
+			player.changePosition((int)(-400 * delta), 0);
+		}
+		
+		if(Gdx.input.isKeyPressed(Input.Keys.RIGHT))
+		{
+			player.changePosition((int)(400 * delta), 0);
+		}
+		
+		if(Gdx.input.isKeyPressed(Input.Keys.UP))
+		{
+			player.changePosition(0, (int)(400 * delta));
+		}
+		
+		if(Gdx.input.isKeyPressed(Input.Keys.DOWN))
+		{
+			player.changePosition(0, (int)(-400 * delta));
+		}
+		
+		for(int i = 0; i < coins.size; i++)
+		{
+			if(coins.get(i).getRect().overlaps(player.getRect()))
+			{
+				coins.removeIndex(i);
+				score++;
+			}
+		}
+		
+		//Way to keep this?
+		//for(Coin coin : coins)
+		//{
+		//	
+		//}
+	}
+	
+	@Override
+	public void resize(int width, int height) {
+        // calculate new viewport
+        float aspectRatio = (float)width/(float)height;
+        float scale = 1f;
+        Vector2 crop = new Vector2(0f, 0f);
+        
+        if(aspectRatio > ASPECT_RATIO)
+        {
+            scale = (float)height/(float)VIRTUAL_HEIGHT;
+            crop.x = (width - VIRTUAL_WIDTH*scale)/2f;
+        }
+        else if(aspectRatio < ASPECT_RATIO)
+        {
+            scale = (float)width/(float)VIRTUAL_WIDTH;
+            crop.y = (height - VIRTUAL_HEIGHT*scale)/2f;
+        }
+        else
+        {
+            scale = (float)width/(float)VIRTUAL_WIDTH;
+        }
+
+        float w = (float)VIRTUAL_WIDTH*scale;
+        float h = (float)VIRTUAL_HEIGHT*scale;
+        viewport = new Rectangle(crop.x, crop.y, w, h);
+    
+		
+	}
+
+	@Override
+	public void show() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void hide() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void pause() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void resume() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void dispose() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+
+}

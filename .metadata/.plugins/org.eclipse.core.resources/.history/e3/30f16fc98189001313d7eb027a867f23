@@ -1,0 +1,21 @@
+package com.reid.workshop;
+
+import com.badlogic.gdx.Game;
+
+public class WorkshopProject extends Game
+{
+
+	@Override
+	public void create()
+	{
+		
+		
+	}
+	
+	public void render()
+	{
+		super.render();
+	}
+	
+	
+}

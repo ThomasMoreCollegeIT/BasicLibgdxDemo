@@ -1,0 +1,17 @@
+package com.reid.workshop;
+
+import com.badlogic.gdx.math.Rectangle;
+
+public class Player
+{
+	int x, y;
+	Rectangle rect;
+	
+	public Player(int xcoord, int ycoord)
+	{
+		x = xcoord;
+		y = ycoord;
+		rect = new Rectangle(x, y, 64, 64);
+	}
+
+}

@@ -1,0 +1,136 @@
+package com.reid.workshop;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.GL10;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.utils.Array;
+
+public class GameScreen implements Screen
+{
+
+	private OrthographicCamera camera;
+	private SpriteBatch batch;
+	private Image player;
+	
+	private Array<Image> coins;
+	private Texture coinTex;
+	private long coinTimer = 0;
+	
+	public GameScreen()
+	{
+		camera = new OrthographicCamera();
+		camera.setToOrtho(false, 800, 600);
+		
+		batch = new SpriteBatch();
+		
+		Texture playTex = new Texture(Gdx.files.internal("paladin.png")); //create a pixel map in memory of what this image looks like
+		player = new Image(playTex);
+		player.setSize(128, 128);
+		player.setPosition(100, 100);
+		
+		coinTex = new Texture(Gdx.files.internal("gold_pile.png")); //keep this in contructor so that we only fetch it once and put it into memory
+		coins = new Array<Image>();
+		createCoin();
+		
+	}
+	
+	
+	public void createCoin()
+	{
+		Image coinImage = new Image(coinTex);
+		coinImage.setPosition(MathUtils.random(32,768), MathUtils.random(32,568));
+		coins.add(coinImage);
+	}
+	
+	@Override
+	public void render(float delta)
+	{
+		Gdx.gl.glClearColor(0, 0, 0, 0);
+		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+		
+		camera.update();
+		
+		//going to create sprites the easy way, not necissarily correct way
+		//any image files read in must have dimensions which are a power of two, probably square only
+		
+		batch.begin(); //so we can cluster our calls together
+		for(Image coin : coins) //iterate through all coins
+		{
+			coin.draw(batch, 1);
+		}
+		player.draw(batch, 1);
+		handleMovement(delta);
+		batch.end();
+		
+		
+		
+	}
+
+	//should probably do this with events not polling keyboard
+	private void handleMovement(float delta)
+	{
+		if(Gdx.input.isKeyPressed(Input.Keys.LEFT))
+		{
+			player .setPosition(player.getX()-100 * delta, player.getY());
+		}
+		
+		if(Gdx.input.isKeyPressed(Input.Keys.RIGHT))
+		{
+			player .setPosition(player.getX()+100 * delta, player.getY());
+		}
+		
+		if(Gdx.input.isKeyPressed(Input.Keys.UP))
+		{
+			player .setPosition(player.getX(), player.getY()+100 * delta);
+		}
+		
+		if(Gdx.input.isKeyPressed(Input.Keys.DOWN))
+		{
+			player .setPosition(player.getX(), player.getY()-100 * delta);
+		}
+	}
+	
+	@Override
+	public void resize(int width, int height) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void show() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void hide() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void pause() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void resume() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void dispose() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+
+}

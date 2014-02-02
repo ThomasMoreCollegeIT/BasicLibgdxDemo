@@ -1,0 +1,177 @@
+package com.reid.workshop;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.GL10;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.TimeUtils;
+
+public class GameScreen implements Screen
+{
+
+	private OrthographicCamera camera;
+	private SpriteBatch batch;
+	private Image playerImage;
+	
+	private Player player;
+	
+	private Array<Coin> coins;
+	private Image coinImage;
+	private Texture coinTex;
+	private long coinTimer = 0;
+	
+	private int score = 0;
+	private BitmapFont font;
+	
+	public GameScreen()
+	{
+		camera = new OrthographicCamera();
+		camera.setToOrtho(false, 800, 600);
+		
+		batch = new SpriteBatch();
+		
+		Texture playTex = new Texture(Gdx.files.internal("paladin.png")); //create a pixel map in memory of what this image looks like
+		playerImage = new Image(playTex);
+		playerImage.setSize(128, 128);
+		playerImage.setPosition(100, 100);
+		
+		player = new Player(300, 300);
+		
+		coinTex = new Texture(Gdx.files.internal("gold_pile.png")); //keep this in contructor so that we only fetch it once and put it into memory
+		coinImage = new Image(coinTex);
+		coins = new Array<Coin>();
+		
+		font = new BitmapFont();
+		
+	}
+	
+	
+	public void createCoin()
+	{
+		
+		//coinImage.setPosition(MathUtils.random(32,768), MathUtils.random(32,568));
+		//coins.add(coinImage);
+		coins.add(new Coin(MathUtils.random(32,768), MathUtils.random(32,568)));
+	}
+	
+	@Override
+	public void render(float delta)
+	{
+		
+		Gdx.gl.glClearColor(0, 0, 0, 0);
+		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+		
+		camera.update();
+		
+		//going to create sprites the easy way, not necissarily correct way
+		//any image files read in must have dimensions which are a power of two, probably square only
+		
+		batch.begin(); //so we can cluster our calls together
+		for(Coin coin : coins) //iterate through all coins
+		{
+			//coin.draw(batch, 1);
+			coinImage.setPosition(coin.getX(), coin.getY());
+			coinImage.draw(batch, 1);
+		}
+		playerImage.setPosition(player.getX(), player.getY());
+		playerImage.draw(batch, 1);
+		handleMovement(delta);
+		handleTimedEvents();
+		font.draw(batch, "Score " + score, 50, 500);
+		batch.end();
+		
+		
+	}
+
+	private void handleTimedEvents()
+	{
+		if(TimeUtils.millis()- coinTimer >3000) //TimeUtils.millis() is milliseconds since start of program, every 3 seconds
+		{
+			createCoin();
+		}
+	}
+	
+	//should probably do this with events not polling keyboard
+	private void handleMovement(float delta)
+	{
+		if(Gdx.input.isKeyPressed(Input.Keys.LEFT))
+		{
+			player.changePosition((int)(-100 * delta), 0);
+		}
+		
+		if(Gdx.input.isKeyPressed(Input.Keys.RIGHT))
+		{
+			player.changePosition((int)(100 * delta), 0);
+		}
+		
+		if(Gdx.input.isKeyPressed(Input.Keys.UP))
+		{
+			player.changePosition(0, (int)(100 * delta));
+		}
+		
+		if(Gdx.input.isKeyPressed(Input.Keys.DOWN))
+		{
+			player.changePosition(0, (int)(-100 * delta));
+		}
+		
+		for(int i = 0; i < coins.size; i++)
+		{
+			if(coins.get(i).getRect().overlaps(player.getRect()))
+			{
+				coins.removeIndex(i);
+				score++;
+			}
+		}
+		
+		//Way to keep this?
+		//for(Coin coin : coins)
+		//{
+		//	
+		//}
+	}
+	
+	@Override
+	public void resize(int width, int height) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void show() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void hide() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void pause() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void resume() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void dispose() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+
+}
